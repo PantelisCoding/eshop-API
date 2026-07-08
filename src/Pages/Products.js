@@ -120,12 +120,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       return;
     }
     setLoading(true);
-    fetch(`https://real-time-amazon-data.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&country=US&category_id=aps`, {
-      headers: {
-        'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': 'real-time-amazon-data.p.rapidapi.com',
-      }
-    })
+    fetch(`/api/products?query=${encodeURIComponent(query)}`)
       .then(r => r.json())
       .then(data => {
         const raw = data.data?.products || [];
