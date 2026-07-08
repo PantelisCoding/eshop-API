@@ -165,7 +165,6 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
     setPage(1);
-    setHasMore(true);
   }, [selectedCategory]); // eslint-disable-line
 
   const updateColumns = useCallback(() => {
