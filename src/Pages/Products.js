@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
 
 const CATEGORY_QUERIES = {
-  'All':         'all',
+  'All':         'electronics',
   'Laptops':     'laptop computer notebook',
   'Smartphones': 'unlocked smartphone android iphone',
   'Monitors':    '4k computer monitor display',
