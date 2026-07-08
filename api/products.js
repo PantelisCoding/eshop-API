@@ -2,13 +2,9 @@ const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
 const RAPIDAPI_HOST = 'real-time-amazon-data.p.rapidapi.com';
 
 const ALL_QUERIES = [
-  'laptop computer notebook',
-  'unlocked smartphone android iphone',
-  '4k computer monitor display',
-  'wireless headphones bluetooth earbuds',
-  'android tablet ipad',
-  'gaming keyboard mouse headset',
-  'computer mouse keyboard usb hub',
+  'laptop computer',
+  'smartphone iphone',
+  'headphones monitor tablet',
 ];
 
 async function searchProducts(query, page = '1') {
