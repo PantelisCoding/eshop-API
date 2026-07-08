@@ -1,5 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
+const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
+
+const CATEGORY_QUERIES = {
+  'All':         'electronics gadgets',
+  'Laptops':     'laptop computer',
+  'Smartphones': 'smartphone android iphone',
+  'Monitors':    'computer monitor display',
+  'Accessories': 'computer mouse keyboard accessories',
+  'Audio':       'headphones bluetooth speakers',
+  'Tablets':     'android tablet ipad',
+  'Gaming':      'gaming keyboard mouse headset',
+};
+
+const productCache = {};
+
 function PriceSlider({ min, max, sliderMax, onChange }) {
   const trackRef = useRef(null);
   const draggingRef = useRef(null);
@@ -94,19 +109,52 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
 
   useEffect(() => {
+    const query = CATEGORY_QUERIES[selectedCategory] || 'electronics';
+    if (productCache[query]) {
+      const items = productCache[query];
+      setProducts(items);
+      if (onProductsLoaded) onProductsLoaded(items);
+      const max = Math.ceil(Math.max(...items.map(p => p.price)));
+      setSliderMax(max);
+      setPriceRange({ min: 0, max });
+      return;
+    }
     setLoading(true);
-    fetch('https://eshop-api-production-2a1c.up.railway.app/products')
-      .then(res => res.json())
+    fetch(`https://real-time-amazon-data.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&country=US&category_id=aps`, {
+      headers: {
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': 'real-time-amazon-data.p.rapidapi.com',
+      }
+    })
+      .then(r => r.json())
       .then(data => {
-        const items = data.data;
+        const raw = data.data?.products || [];
+        const items = raw
+          .filter(p => p.product_photo && p.product_price)
+          .map((p, i) => {
+            const price = parseFloat((p.product_price || p.product_minimum_offer_price || '$0').replace(/[^0-9.]/g, '')) || 0;
+            return {
+              id: p.asin || `amz-${i}`,
+              title: p.product_title,
+              price,
+              imageUrl: p.product_photo,
+              categoryName: selectedCategory,
+              description: p.product_star_rating ? `⭐ ${p.product_star_rating} (${p.product_num_ratings || 0} reviews)` : '',
+            };
+          })
+          .filter(p => p.price > 0);
+        productCache[query] = items;
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
-        const max = Math.ceil(Math.max(...items.map(p => p.price)));
-        setSliderMax(max);
-        setPriceRange({ min: 0, max });
+        if (items.length > 0) {
+          const max = Math.ceil(Math.max(...items.map(p => p.price)));
+          setSliderMax(max);
+          setPriceRange({ min: 0, max });
+        }
       })
+      .catch(() => setProducts([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedCategory]); // eslint-disable-line
 
   const updateColumns = useCallback(() => {
     if (!gridRef.current) return;
@@ -134,17 +182,16 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   };
 
   const isSelected = (id) => selectedProducts.some(p => p.id === id);
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.categoryName))).sort()];
+  const categories = Object.keys(CATEGORY_QUERIES);
 
   const filteredProducts = products
     .filter(p => {
       const matchSearch = !searchQuery ||
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.categoryName.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchCategory = selectedCategory === 'All' || p.categoryName === selectedCategory;
       const matchMin = !sliderMax || p.price >= priceRange.min;
       const matchMax = !sliderMax || p.price <= priceRange.max;
-      return matchSearch && matchCategory && matchMin && matchMax;
+      return matchSearch && matchMin && matchMax;
     })
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
