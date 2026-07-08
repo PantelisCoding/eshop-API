@@ -83,6 +83,8 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   const [columns, setColumns] = useState(4);
   const [openFilter, setOpenFilter] = useState(null); // 'category' | 'price' | 'sort'
   const [detailProduct, setDetailProduct] = useState(null);
+  const [detailData, setDetailData] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const gridRef = useRef(null);
   const filterBarRef = useRef(null);
 
@@ -103,6 +105,17 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
+
+  const openDetail = (product) => {
+    setDetailProduct(product);
+    setDetailData(null);
+    setDetailLoading(true);
+    fetch(`/api/product-details?asin=${product.id}`)
+      .then(r => r.json())
+      .then(data => setDetailData(data.data || null))
+      .catch(() => setDetailData(null))
+      .finally(() => setDetailLoading(false));
+  };
 
   const isFavorite = (id) => favorites.includes(id);
   const toggleFavorite = (id) =>
@@ -424,7 +437,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
           <div
             key={product.id}
             className="product-card"
-            onClick={() => setDetailProduct(product)}
+            onClick={() => openDetail(product)}
             style={{
               background: '#FFFFFF',
               border: isSelected(product.id) ? '2px solid #DC2626' : '1.5px solid #FFFFFF',
@@ -573,7 +586,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
               padding: '40px', minHeight: '420px'
             }}>
               <img
-                src={detailProduct.imageUrl}
+                src={detailData?.product_photos?.[0] || detailProduct.imageUrl}
                 alt={detailProduct.title}
                 style={{ maxWidth: '100%', maxHeight: '320px', objectFit: 'contain' }}
                 onError={e => e.target.src = 'https://cdn-icons-png.flaticon.com/512/2529/2529396.png'}
@@ -614,10 +627,63 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
                 {detailProduct.title}
               </h2>
 
+              {/* Rating */}
+              {(detailData?.product_star_rating || detailProduct.description) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '14px', color: '#F59E0B', fontWeight: '700' }}>
+                    {'★'.repeat(Math.round(parseFloat(detailData?.product_star_rating || 0)))}
+                    {'☆'.repeat(5 - Math.round(parseFloat(detailData?.product_star_rating || 0)))}
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#64748B' }}>
+                    {detailData?.product_star_rating || ''} {detailData?.product_num_ratings ? `(${detailData.product_num_ratings} reviews)` : ''}
+                  </span>
+                </div>
+              )}
+
               {/* Price */}
-              <div style={{ fontSize: '34px', fontWeight: '800', color: '#0F172A', letterSpacing: '-1px', marginBottom: '32px' }}>
+              <div style={{ fontSize: '34px', fontWeight: '800', color: '#0F172A', letterSpacing: '-1px', marginBottom: '20px' }}>
                 €{detailProduct.price.toFixed(2)}
               </div>
+
+              {/* About / bullet points */}
+              {detailLoading && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                  {[100, 80, 90, 70].map((w, i) => (
+                    <div key={i} className="skeleton" style={{ width: `${w}%`, height: '13px', borderRadius: '2px' }} />
+                  ))}
+                </div>
+              )}
+              {!detailLoading && detailData?.about_product?.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '10px' }}>About this item</div>
+                  <ul style={{ paddingLeft: '0', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                    {detailData.about_product.slice(0, 6).map((point, i) => (
+                      <li key={i} style={{ display: 'flex', gap: '8px', fontSize: '13px', color: '#374151', lineHeight: '1.5' }}>
+                        <span style={{ color: '#DC2626', flexShrink: 0, marginTop: '2px' }}>•</span>
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Tech specs */}
+              {!detailLoading && detailData?.product_specifications?.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '10px' }}>Specifications</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                    {detailData.product_specifications.slice(0, 8).map((spec, i) => (
+                      <div key={i} style={{
+                        display: 'flex', gap: '12px', padding: '7px 0',
+                        borderBottom: '1px solid #F1F5F9', fontSize: '13px'
+                      }}>
+                        <span style={{ color: '#94A3B8', fontWeight: '500', minWidth: '110px', flexShrink: 0 }}>{spec.name}</span>
+                        <span style={{ color: '#0F172A' }}>{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {/* Add to cart */}
