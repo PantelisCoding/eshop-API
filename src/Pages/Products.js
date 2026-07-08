@@ -85,6 +85,9 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   const [detailProduct, setDetailProduct] = useState(null);
   const [detailData, setDetailData] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const gridRef = useRef(null);
   const filterBarRef = useRef(null);
 
@@ -105,6 +108,39 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    const query = CATEGORY_QUERIES[selectedCategory] || 'electronics';
+    setLoadingMore(true);
+    fetch(`/api/products?query=${encodeURIComponent(query)}&page=${nextPage}`)
+      .then(r => r.json())
+      .then(data => {
+        const raw = data.data?.products || [];
+        const newItems = raw
+          .filter(p => p.product_photo && p.product_price)
+          .map((p, i) => {
+            const price = parseFloat((p.product_price || '$0').replace(/[^0-9.]/g, '')) || 0;
+            return {
+              id: p.asin || `amz-${nextPage}-${i}`,
+              title: p.product_title,
+              price,
+              imageUrl: p.product_photo,
+              categoryName: selectedCategory,
+              description: p.product_star_rating ? `⭐ ${p.product_star_rating} (${p.product_num_ratings || 0} reviews)` : '',
+            };
+          })
+          .filter(p => p.price > 0);
+        if (newItems.length === 0) {
+          setHasMore(false);
+        } else {
+          setProducts(prev => [...prev, ...newItems]);
+          setPage(nextPage);
+        }
+      })
+      .catch(() => setHasMore(false))
+      .finally(() => setLoadingMore(false));
+  };
 
   const openDetail = (product) => {
     setDetailProduct(product);
@@ -162,6 +198,8 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
+    setPage(1);
+    setHasMore(true);
   }, [selectedCategory]); // eslint-disable-line
 
   const updateColumns = useCallback(() => {
@@ -209,7 +247,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       return 0;
     });
 
-  const visibleProducts = showAll ? filteredProducts : filteredProducts.slice(0, columns * 2);
+  const visibleProducts = filteredProducts;
 
   const hasActiveFilters = selectedCategory !== 'All' || sortBy !== 'default' ||
     priceRange.min > 0 || (sliderMax && priceRange.max < sliderMax);
@@ -536,20 +574,21 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
         </div>
       )}
 
-      {/* Show all / Show less */}
-      {filteredProducts.length > columns * 2 && (
+      {/* Load more */}
+      {hasMore && filteredProducts.length > 0 && (
         <div style={{ textAlign: 'center', marginTop: '28px' }}>
           <button
             className="show-all-btn"
-            onClick={() => setShowAll(!showAll)}
+            onClick={loadMore}
+            disabled={loadingMore}
             style={{
-              padding: '11px 32px', borderRadius: '10px',
-              border: '1.5px solid #DC2626', background: '#FFFFFF',
+              padding: '11px 32px', border: '1.5px solid #DC2626', background: '#FFFFFF',
               color: '#DC2626', fontSize: '14px', fontWeight: '600',
-              cursor: 'pointer', transition: 'all 0.15s', borderRadius: '0'
+              cursor: loadingMore ? 'not-allowed' : 'pointer',
+              opacity: loadingMore ? 0.6 : 1, transition: 'all 0.15s', borderRadius: '0'
             }}
           >
-            {showAll ? 'Show less' : `Show all ${filteredProducts.length} products`}
+            {loadingMore ? 'Loading...' : 'Load more products'}
           </button>
         </div>
       )}
