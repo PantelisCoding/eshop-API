@@ -3,14 +3,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
 
 const CATEGORY_QUERIES = {
-  'All':         'laptop smartphone monitor headphones tablet',
+  'All':         'all',
   'Laptops':     'laptop computer notebook',
   'Smartphones': 'unlocked smartphone android iphone',
   'Monitors':    '4k computer monitor display',
   'Accessories': 'computer mouse keyboard usb hub',
   'Audio':       'wireless headphones bluetooth earbuds',
-  'Tablets':     'android tablet 10 inch ipad',
-  'Gaming':      'gaming laptop keyboard mouse headset',
+  'Tablets':     'android tablet ipad',
+  'Gaming':      'gaming keyboard mouse headset',
 };
 
 const productCache = {};
