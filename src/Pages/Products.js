@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
+const TECH_SLUGS = ['laptops', 'smartphones', 'tablets', 'mobile-accessories'];
+
 const CATEGORY_MAP = {
   'All':         null,
   'Laptops':     'laptops',
   'Smartphones': 'smartphones',
   'Tablets':     'tablets',
   'Accessories': 'mobile-accessories',
-  'Watches':     'mens-watches',
-  'Sports':      'sports-accessories',
-  'Furniture':   'furniture',
 };
 
 
@@ -109,20 +108,20 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   useEffect(() => {
     setLoading(true);
     const slug = CATEGORY_MAP[selectedCategory];
-    const url = slug
-      ? `https://dummyjson.com/products/category/${slug}?limit=100`
-      : 'https://dummyjson.com/products?limit=100';
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        const items = (data.products || []).map(p => ({
-          id: p.id,
-          title: p.title,
-          price: p.price,
-          imageUrl: p.thumbnail,
-          categoryName: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          description: `${p.description}${p.brand ? ` | Brand: ${p.brand}` : ''} | ⭐ ${p.rating}`,
-        }));
+    const mapProduct = p => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      imageUrl: p.thumbnail,
+      categoryName: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      description: `${p.description}${p.brand ? ` | Brand: ${p.brand}` : ''} | ⭐ ${p.rating}`,
+    });
+    const promise = slug
+      ? fetch(`https://dummyjson.com/products/category/${slug}?limit=100`).then(r => r.json()).then(d => d.products || [])
+      : Promise.all(TECH_SLUGS.map(s => fetch(`https://dummyjson.com/products/category/${s}?limit=100`).then(r => r.json()).then(d => d.products || []))).then(results => results.flat());
+    promise
+      .then(products => {
+        const items = products.map(mapProduct);
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
         if (items.length > 0) {
