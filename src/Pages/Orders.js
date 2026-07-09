@@ -70,10 +70,12 @@ function Orders({ loggedInUser }) {
   }
 
   return (
-    <div style={{ background: '#F8FAFC', minHeight: 'calc(100vh - 88px)', padding: '40px 56px' }}>
+    <div className="orders-page" style={{ background: '#F8FAFC', minHeight: 'calc(100vh - 88px)' }}>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         .order-row:hover { background: #FAFAFA !important; }
+        .orders-page { padding: 40px 56px; }
+        @media (max-width: 768px) { .orders-page { padding: 24px 16px !important; } }
       `}</style>
 
       <div style={{ marginBottom: '32px' }}>

@@ -70,13 +70,23 @@ function Landing() {
         .orders-btn:hover { background: #F1F5F9 !important; }
         .feature-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; transform: translateY(-2px); }
         .cat-chip:hover { background: #DC2626 !important; color: #FFFFFF !important; }
+        .hero-section { padding: 80px 48px 72px; }
+        .hero-h1 { font-size: 52px !important; }
+        .section-pad { padding-left: 48px; padding-right: 48px; }
+        @media (max-width: 768px) {
+          .hero-section { padding: 48px 20px 40px !important; }
+          .hero-h1 { font-size: 34px !important; letter-spacing: -0.5px !important; }
+          .hero-sub { font-size: 16px !important; }
+          .section-pad { padding-left: 16px !important; padding-right: 16px !important; }
+          .hero-stat { padding: 0 12px !important; }
+          .hero-stat-val { font-size: 22px !important; }
+        }
       `}</style>
 
       {/* Hero */}
-      <div style={{
+      <div className="hero-section" style={{
         background: 'linear-gradient(135deg, #FEF2F2 0%, #F8FAFC 60%, #F0F9FF 100%)',
         borderBottom: 'none',
-        padding: '80px 48px 72px'
       }}>
         <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
 
@@ -146,13 +156,9 @@ function Landing() {
               { value: '15K+', label: 'Customers' },
               { value: '99%', label: 'Satisfaction' },
               { value: '24/7', label: 'Support' },
-            ].map((stat, i, arr) => (
-              <div key={stat.label} style={{
-                flex: 1, textAlign: 'center',
-                borderRight: 'none',
-                padding: '0 24px'
-              }}>
-                <div style={{ fontSize: '28px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>{stat.value}</div>
+            ].map((stat) => (
+              <div key={stat.label} className="hero-stat" style={{ flex: 1, textAlign: 'center', padding: '0 24px' }}>
+                <div className="hero-stat-val" style={{ fontSize: '28px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>{stat.value}</div>
                 <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
               </div>
             ))}
@@ -161,7 +167,7 @@ function Landing() {
       </div>
 
       {/* Category chips */}
-      <div style={{ padding: '40px 48px 0', maxWidth: '960px', margin: '0 auto' }}>
+      <div className="section-pad" style={{ paddingTop: '40px', paddingBottom: '0', maxWidth: '960px', margin: '0 auto' }}>
         <div style={{ fontSize: '13px', fontWeight: '600', color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>
           Browse by category
         </div>
@@ -187,7 +193,7 @@ function Landing() {
       </div>
 
       {/* Feature cards */}
-      <div style={{ padding: '40px 48px 64px', maxWidth: '960px', margin: '0 auto' }}>
+      <div className="section-pad" style={{ paddingTop: '40px', paddingBottom: '64px', maxWidth: '960px', margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px' }}>
           {features.map(f => (
             <div

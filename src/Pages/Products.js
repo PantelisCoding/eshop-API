@@ -192,7 +192,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   };
 
   return (
-    <div style={{ background: '#F8FAFC', minHeight: 'calc(100vh - 88px)', padding: '40px 56px' }}>
+    <div className="products-page" style={{ background: '#F8FAFC', minHeight: 'calc(100vh - 88px)' }}>
 
       <style>{`
         .product-card { transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s; }
@@ -204,6 +204,15 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
         .fav-btn:hover { transform: scale(1.15); opacity: 0.85; }
         @keyframes shimmer { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
         .skeleton { background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%); background-size: 600px 100%; animation: shimmer 1.4s infinite; }
+        .products-page { padding: 40px 56px; }
+        .filter-bar { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .product-modal { flex-direction: row !important; width: 90% !important; max-width: 820px !important; }
+        @media (max-width: 768px) {
+          .products-page { padding: 24px 16px !important; }
+          .filter-bar { flex-wrap: nowrap !important; overflow-x: auto; }
+          .product-modal { flex-direction: column !important; width: 100% !important; max-width: 100% !important; max-height: 95vh !important; top: auto !important; bottom: 0 !important; left: 0 !important; transform: none !important; border-radius: 0 !important; }
+          .modal-image-panel { width: 100% !important; min-height: 220px !important; max-height: 240px !important; }
+        }
       `}</style>
 
       {/* Page header */}
@@ -235,7 +244,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       )}
 
       {/* Filter toolbar */}
-      {!loading && <div ref={filterBarRef} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
+      {!loading && <div ref={filterBarRef} className="filter-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '28px' }}>
 
         {/* Category button */}
         <div style={{ position: 'relative' }}>
@@ -545,18 +554,17 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
             }}
           />
           {/* Modal */}
-          <div style={{
+          <div className="product-modal" style={{
             position: 'fixed', top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 501, background: '#FFFFFF',
-            width: '90%', maxWidth: '820px',
-            display: 'flex', flexDirection: 'row',
+            display: 'flex',
             boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
             animation: 'slideUp 0.2s ease',
             maxHeight: '90vh', overflow: 'hidden'
           }}>
             {/* Image panel */}
-            <div style={{
+            <div className="modal-image-panel" style={{
               width: '46%', flexShrink: 0,
               background: '#F8FAFC', borderRight: '1px solid #F1F5F9',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
