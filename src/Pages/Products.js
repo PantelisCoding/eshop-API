@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
-
-const CATEGORY_QUERIES = {
-  'All':         'electronics',
-  'Laptops':     'laptop computer notebook',
-  'Smartphones': 'unlocked smartphone android iphone',
-  'Monitors':    '4k computer monitor display',
-  'Accessories': 'computer mouse keyboard usb hub',
-  'Audio':       'wireless headphones bluetooth earbuds',
-  'Tablets':     'android tablet ipad',
-  'Gaming':      'gaming keyboard mouse headset',
+const CATEGORY_MAP = {
+  'All':         null,
+  'Laptops':     'laptops',
+  'Smartphones': 'smartphones',
+  'Tablets':     'tablets',
+  'Accessories': 'mobile-accessories',
+  'Watches':     'mens-watches',
+  'Sports':      'sports-accessories',
+  'Furniture':   'furniture',
 };
 
-const productCache = {};
 
 function PriceSlider({ min, max, sliderMax, onChange }) {
   const trackRef = useRef(null);
@@ -79,14 +76,11 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   const [sortBy, setSortBy] = useState('default');
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [sliderMax, setSliderMax] = useState(0);
-  const [showAll, setShowAll] = useState(false);
-  const [columns, setColumns] = useState(4);
-  const [openFilter, setOpenFilter] = useState(null); // 'category' | 'price' | 'sort'
-  const [detailProduct, setDetailProduct] = useState(null);
-  const [detailData, setDetailData] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 16;
+  const [columns, setColumns] = useState(4);
+  const [openFilter, setOpenFilter] = useState(null);
+  const [detailProduct, setDetailProduct] = useState(null);
   const gridRef = useRef(null);
   const filterBarRef = useRef(null);
 
@@ -108,52 +102,27 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const openDetail = (product) => {
-    setDetailProduct(product);
-    setDetailData(null);
-    setDetailLoading(true);
-    fetch(`/api/product-details?asin=${product.id}`)
-      .then(r => r.json())
-      .then(data => setDetailData(data.data || null))
-      .catch(() => setDetailData(null))
-      .finally(() => setDetailLoading(false));
-  };
-
   const isFavorite = (id) => favorites.includes(id);
   const toggleFavorite = (id) =>
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
 
   useEffect(() => {
-    const query = CATEGORY_QUERIES[selectedCategory] || 'electronics';
-    if (productCache[query]) {
-      const items = productCache[query];
-      setProducts(items);
-      if (onProductsLoaded) onProductsLoaded(items);
-      const max = Math.ceil(Math.max(...items.map(p => p.price)));
-      setSliderMax(max);
-      setPriceRange({ min: 0, max });
-      return;
-    }
     setLoading(true);
-    fetch(`/api/products?query=${encodeURIComponent(query)}`)
+    const slug = CATEGORY_MAP[selectedCategory];
+    const url = slug
+      ? `https://dummyjson.com/products/category/${slug}?limit=100`
+      : 'https://dummyjson.com/products?limit=100';
+    fetch(url)
       .then(r => r.json())
       .then(data => {
-        const raw = data.data?.products || [];
-        const items = raw
-          .filter(p => p.product_photo && p.product_price)
-          .map((p, i) => {
-            const price = parseFloat((p.product_price || p.product_minimum_offer_price || '$0').replace(/[^0-9.]/g, '')) || 0;
-            return {
-              id: p.asin || `amz-${i}`,
-              title: p.product_title,
-              price,
-              imageUrl: p.product_photo,
-              categoryName: selectedCategory,
-              description: p.product_star_rating ? `⭐ ${p.product_star_rating} (${p.product_num_ratings || 0} reviews)` : '',
-            };
-          })
-          .filter(p => p.price > 0);
-        productCache[query] = items;
+        const items = (data.products || []).map(p => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          imageUrl: p.thumbnail,
+          categoryName: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          description: `${p.description}${p.brand ? ` | Brand: ${p.brand}` : ''} | ⭐ ${p.rating}`,
+        }));
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
         if (items.length > 0) {
@@ -164,7 +133,6 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
-    setPage(1);
   }, [selectedCategory]); // eslint-disable-line
 
   const updateColumns = useCallback(() => {
@@ -193,7 +161,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   };
 
   const isSelected = (id) => selectedProducts.some(p => p.id === id);
-  const categories = Object.keys(CATEGORY_QUERIES);
+  const categories = Object.keys(CATEGORY_MAP);
 
   const filteredProducts = products
     .filter(p => {
@@ -441,7 +409,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
           <div
             key={product.id}
             className="product-card"
-            onClick={() => openDetail(product)}
+            onClick={() => setDetailProduct(product)}
             style={{
               background: '#FFFFFF',
               border: isSelected(product.id) ? '2px solid #DC2626' : '1.5px solid #FFFFFF',
@@ -548,31 +516,14 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
             disabled={page === 1}
             style={{ padding: '8px 14px', border: '1.5px solid #CBD5E1', background: '#FFFFFF', color: page === 1 ? '#CBD5E1' : '#374151', fontSize: '13px', fontWeight: '500', cursor: page === 1 ? 'default' : 'pointer', borderRadius: '0' }}
           >‹</button>
-
           {Array.from({ length: totalPages }, (_, i) => i + 1)
             .filter(n => n === 1 || n === totalPages || Math.abs(n - page) <= 2)
-            .reduce((acc, n, i, arr) => {
-              if (i > 0 && n - arr[i - 1] > 1) acc.push('...');
-              acc.push(n);
-              return acc;
-            }, [])
+            .reduce((acc, n, i, arr) => { if (i > 0 && n - arr[i-1] > 1) acc.push('...'); acc.push(n); return acc; }, [])
             .map((n, i) => n === '...' ? (
-              <span key={`dots-${i}`} style={{ padding: '8px 4px', color: '#94A3B8', fontSize: '13px' }}>…</span>
+              <span key={`d${i}`} style={{ padding: '8px 4px', color: '#94A3B8', fontSize: '13px' }}>…</span>
             ) : (
-              <button
-                key={n}
-                onClick={() => { setPage(n); window.scrollTo(0, 0); }}
-                style={{
-                  padding: '8px 13px', border: '1.5px solid', borderRadius: '0',
-                  borderColor: page === n ? '#DC2626' : '#CBD5E1',
-                  background: page === n ? '#DC2626' : '#FFFFFF',
-                  color: page === n ? '#FFFFFF' : '#374151',
-                  fontSize: '13px', fontWeight: page === n ? '700' : '400', cursor: 'pointer'
-                }}
-              >{n}</button>
-            ))
-          }
-
+              <button key={n} onClick={() => { setPage(n); window.scrollTo(0, 0); }} style={{ padding: '8px 13px', border: '1.5px solid', borderRadius: '0', borderColor: page === n ? '#DC2626' : '#CBD5E1', background: page === n ? '#DC2626' : '#FFFFFF', color: page === n ? '#FFFFFF' : '#374151', fontSize: '13px', fontWeight: page === n ? '700' : '400', cursor: 'pointer' }}>{n}</button>
+            ))}
           <button
             onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo(0, 0); }}
             disabled={page === totalPages}
@@ -613,7 +564,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
               padding: '40px', minHeight: '420px'
             }}>
               <img
-                src={detailData?.product_photos?.[0] || detailProduct.imageUrl}
+                src={detailProduct.imageUrl}
                 alt={detailProduct.title}
                 style={{ maxWidth: '100%', maxHeight: '320px', objectFit: 'contain' }}
                 onError={e => e.target.src = 'https://cdn-icons-png.flaticon.com/512/2529/2529396.png'}
@@ -654,63 +605,17 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
                 {detailProduct.title}
               </h2>
 
-              {/* Rating */}
-              {(detailData?.product_star_rating || detailProduct.description) && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '14px', color: '#F59E0B', fontWeight: '700' }}>
-                    {'★'.repeat(Math.round(parseFloat(detailData?.product_star_rating || 0)))}
-                    {'☆'.repeat(5 - Math.round(parseFloat(detailData?.product_star_rating || 0)))}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#64748B' }}>
-                    {detailData?.product_star_rating || ''} {detailData?.product_num_ratings ? `(${detailData.product_num_ratings} reviews)` : ''}
-                  </span>
-                </div>
+              {/* Description */}
+              {detailProduct.description && (
+                <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.6', marginBottom: '20px' }}>
+                  {detailProduct.description}
+                </p>
               )}
 
               {/* Price */}
-              <div style={{ fontSize: '34px', fontWeight: '800', color: '#0F172A', letterSpacing: '-1px', marginBottom: '20px' }}>
+              <div style={{ fontSize: '34px', fontWeight: '800', color: '#0F172A', letterSpacing: '-1px', marginBottom: '32px' }}>
                 €{detailProduct.price.toFixed(2)}
               </div>
-
-              {/* About / bullet points */}
-              {detailLoading && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                  {[100, 80, 90, 70].map((w, i) => (
-                    <div key={i} className="skeleton" style={{ width: `${w}%`, height: '13px', borderRadius: '2px' }} />
-                  ))}
-                </div>
-              )}
-              {!detailLoading && detailData?.about_product?.length > 0 && (
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '10px' }}>About this item</div>
-                  <ul style={{ paddingLeft: '0', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '7px' }}>
-                    {detailData.about_product.slice(0, 6).map((point, i) => (
-                      <li key={i} style={{ display: 'flex', gap: '8px', fontSize: '13px', color: '#374151', lineHeight: '1.5' }}>
-                        <span style={{ color: '#DC2626', flexShrink: 0, marginTop: '2px' }}>•</span>
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Tech specs */}
-              {!detailLoading && detailData?.product_specifications?.length > 0 && (
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '10px' }}>Specifications</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                    {detailData.product_specifications.slice(0, 8).map((spec, i) => (
-                      <div key={i} style={{
-                        display: 'flex', gap: '12px', padding: '7px 0',
-                        borderBottom: '1px solid #F1F5F9', fontSize: '13px'
-                      }}>
-                        <span style={{ color: '#94A3B8', fontWeight: '500', minWidth: '110px', flexShrink: 0 }}>{spec.name}</span>
-                        <span style={{ color: '#0F172A' }}>{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {/* Add to cart */}
