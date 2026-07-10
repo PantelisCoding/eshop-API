@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-const CATEGORY_MAP = {
-  'All':         null,
-  'Electronics': 'electronics',
-  'Jewelry':     'jewelery',
-  "Men's":       "men's clothing",
-  "Women's":     "women's clothing",
-};
+const CATEGORIES = ['All', 'Laptops', 'Smartphones', 'Tablets', 'Accessories', 'Monitors', 'Gaming'];
 
 
 function PriceSlider({ min, max, sliderMax, onChange }) {
@@ -105,14 +99,14 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
 
   useEffect(() => {
     setLoading(true);
-    const slug = CATEGORY_MAP[selectedCategory];
-    const url = slug ? `/api/products?category=${encodeURIComponent(slug)}` : '/api/products';
-    fetch(url)
+    fetch('/products.json')
       .then(r => r.json())
-      .then(data => {
-        const items = data.products || [];
+      .then(all => {
+        const items = selectedCategory === 'All'
+          ? all
+          : all.filter(p => p.category === selectedCategory);
         setProducts(items);
-        if (onProductsLoaded) onProductsLoaded(items);
+        if (onProductsLoaded) onProductsLoaded(all);
         if (items.length > 0) {
           const max = Math.ceil(Math.max(...items.map(p => p.price)));
           setSliderMax(max);
@@ -149,7 +143,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   };
 
   const isSelected = (id) => selectedProducts.some(p => p.id === id);
-  const categories = Object.keys(CATEGORY_MAP);
+  const categories = CATEGORIES;
 
   const filteredProducts = products
     .filter(p => {
