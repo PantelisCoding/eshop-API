@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 const CATEGORY_MAP = {
   'All':         null,
   'Electronics': 'electronics',
-  'Accessories': 'jewelery',
-  'Clothing':    "men's clothing",
-  'Fashion':     "women's clothing",
+  'Jewelry':     'jewelery',
+  "Men's":       "men's clothing",
+  "Women's":     "women's clothing",
 };
 
 
@@ -106,20 +106,11 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   useEffect(() => {
     setLoading(true);
     const slug = CATEGORY_MAP[selectedCategory];
-    const url = slug
-      ? `https://fakestoreapi.com/products/category/${encodeURIComponent(slug)}`
-      : 'https://fakestoreapi.com/products';
+    const url = slug ? `/api/products?category=${encodeURIComponent(slug)}` : '/api/products';
     fetch(url)
       .then(r => r.json())
       .then(data => {
-        const items = (Array.isArray(data) ? data : []).map(p => ({
-          id: p.id,
-          title: p.title,
-          price: p.price,
-          imageUrl: p.image,
-          categoryName: p.category.replace(/\b\w/g, c => c.toUpperCase()),
-          description: `${p.description} | ⭐ ${p.rating?.rate || ''}`,
-        }));
+        const items = data.products || [];
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
         if (items.length > 0) {
