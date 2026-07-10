@@ -1,27 +1,41 @@
+const TECH_SLUGS = ['laptops', 'smartphones', 'tablets', 'mobile-accessories'];
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
 
   const { category } = req.query;
 
   try {
-    const url = category && category !== 'all'
-      ? `https://fakestoreapi.com/products/category/${encodeURIComponent(category)}`
-      : 'https://fakestoreapi.com/products';
+    let rawProducts = [];
 
-    const r = await fetch(url);
-    const data = await r.json();
+    if (category && category !== 'all') {
+      const r = await fetch(`https://dummyjson.com/products/category/${category}?limit=100`, { signal: AbortSignal.timeout(8000) });
+      const data = await r.json();
+      rawProducts = data.products || [];
+    } else {
+      const results = await Promise.allSettled(
+        TECH_SLUGS.map(s =>
+          fetch(`https://dummyjson.com/products/category/${s}?limit=100`, { signal: AbortSignal.timeout(8000) })
+            .then(r => r.json())
+            .then(d => d.products || [])
+        )
+      );
+      rawProducts = results.filter(r => r.status === 'fulfilled').flatMap(r => r.value);
+    }
 
-    const products = (Array.isArray(data) ? data : []).map(p => ({
+    const products = rawProducts.map(p => ({
       id: p.id,
       title: p.title,
       price: p.price,
-      imageUrl: p.image,
-      categoryName: p.category.replace(/\b\w/g, c => c.toUpperCase()),
-      description: `${p.description} | ⭐ ${p.rating?.rate || ''}`,
+      image: p.thumbnail,
+      category: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      description: `${p.description}${p.brand ? ' | ' + p.brand : ''} | ⭐ ${p.rating}`,
+      rating: p.rating,
     }));
 
-    res.status(200).json({ products });
+    return res.status(200).json({ products });
   } catch (err) {
-    res.status(500).json({ error: err.message, products: [] });
+    return res.status(500).json({ error: String(err), products: [] });
   }
 }
