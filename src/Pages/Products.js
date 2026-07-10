@@ -6,6 +6,8 @@ const CATEGORY_MAP = {
   'Smartphones': 'smartphones',
   'Tablets':     'tablets',
   'Accessories': 'mobile-accessories',
+  'Monitors':    'Monitors',
+  'Gaming':      'Gaming',
 };
 
 
