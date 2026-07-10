@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-const TECH_SLUGS = ['laptops', 'smartphones', 'tablets', 'mobile-accessories'];
-
 const CATEGORY_MAP = {
   'All':         null,
-  'Laptops':     'laptops',
-  'Smartphones': 'smartphones',
-  'Tablets':     'tablets',
-  'Accessories': 'mobile-accessories',
+  'Electronics': 'electronics',
+  'Accessories': 'jewelery',
+  'Clothing':    "men's clothing",
+  'Fashion':     "women's clothing",
 };
 
 
@@ -108,19 +106,20 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   useEffect(() => {
     setLoading(true);
     const slug = CATEGORY_MAP[selectedCategory];
-    const mapProduct = p => ({
-      id: p.id,
-      title: p.title,
-      price: p.price,
-      imageUrl: p.thumbnail,
-      categoryName: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      description: `${p.description}${p.brand ? ` | Brand: ${p.brand}` : ''} | ⭐ ${p.rating}`,
-    });
-    const url = slug ? `/api/products?category=${slug}` : '/api/products?category=all';
+    const url = slug
+      ? `https://fakestoreapi.com/products/category/${encodeURIComponent(slug)}`
+      : 'https://fakestoreapi.com/products';
     fetch(url)
       .then(r => r.json())
       .then(data => {
-        const items = (data.products || []).map(mapProduct);
+        const items = (Array.isArray(data) ? data : []).map(p => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          imageUrl: p.image,
+          categoryName: p.category.replace(/\b\w/g, c => c.toUpperCase()),
+          description: `${p.description} | ⭐ ${p.rating?.rate || ''}`,
+        }));
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
         if (items.length > 0) {
