@@ -1,23 +1,32 @@
-const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
-const RAPIDAPI_HOST = 'ebay-product-search.p.rapidapi.com';
+const TECH_SLUGS = ['laptops', 'smartphones', 'tablets', 'mobile-accessories'];
 
 export default async function handler(req, res) {
-  const { query = 'electronics', page = '1' } = req.query;
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const { category } = req.query;
 
   try {
-    const response = await fetch(
-      `https://${RAPIDAPI_HOST}/api/ebay/search?keyword=${encodeURIComponent(query)}&page=${page}`,
-      {
-        headers: {
-          'x-rapidapi-key': RAPIDAPI_KEY,
-          'x-rapidapi-host': RAPIDAPI_HOST,
-        }
-      }
-    );
-    const data = await response.json();
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(200).json(data);
+    let products = [];
+
+    if (category && category !== 'all') {
+      const r = await fetch(`https://dummyjson.com/products/category/${category}?limit=100`);
+      const data = await r.json();
+      products = data.products || [];
+    } else {
+      const results = await Promise.allSettled(
+        TECH_SLUGS.map(s =>
+          fetch(`https://dummyjson.com/products/category/${s}?limit=100`)
+            .then(r => r.json())
+            .then(d => d.products || [])
+        )
+      );
+      products = results
+        .filter(r => r.status === 'fulfilled')
+        .flatMap(r => r.value);
+    }
+
+    res.status(200).json({ products });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch products' });
+    res.status(500).json({ error: err.message, products: [] });
   }
 }

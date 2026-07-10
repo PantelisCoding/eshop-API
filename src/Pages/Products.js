@@ -116,12 +116,11 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
       categoryName: p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
       description: `${p.description}${p.brand ? ` | Brand: ${p.brand}` : ''} | ⭐ ${p.rating}`,
     });
-    const promise = slug
-      ? fetch(`https://dummyjson.com/products/category/${slug}?limit=100`).then(r => r.json()).then(d => d.products || [])
-      : Promise.allSettled(TECH_SLUGS.map(s => fetch(`https://dummyjson.com/products/category/${s}?limit=100`).then(r => r.json()).then(d => d.products || []))).then(results => results.filter(r => r.status === 'fulfilled').flatMap(r => r.value));
-    promise
-      .then(products => {
-        const items = products.map(mapProduct);
+    const url = slug ? `/api/products?category=${slug}` : '/api/products?category=all';
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const items = (data.products || []).map(mapProduct);
         setProducts(items);
         if (onProductsLoaded) onProductsLoaded(items);
         if (items.length > 0) {
@@ -129,9 +128,9 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
           setSliderMax(max);
           setPriceRange({ min: 0, max });
         }
+        setLoading(false);
       })
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false));
+      .catch(() => { setProducts([]); setLoading(false); });
   }, [selectedCategory]); // eslint-disable-line
 
   const updateColumns = useCallback(() => {
