@@ -203,11 +203,11 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
         @keyframes shimmer { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
         .skeleton { background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%); background-size: 600px 100%; animation: shimmer 1.4s infinite; }
         .products-page { padding: 40px 56px; }
-        .filter-bar { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .filter-bar { overflow: visible !important; }
         .product-modal { flex-direction: row !important; width: 90% !important; max-width: 820px !important; }
         @media (max-width: 768px) {
           .products-page { padding: 24px 16px !important; }
-          .filter-bar { flex-wrap: nowrap !important; overflow-x: auto; }
+          .filter-bar { flex-wrap: wrap !important; gap: 8px !important; }
           .product-modal { flex-direction: column !important; width: 100% !important; max-width: 100% !important; max-height: 95vh !important; top: auto !important; bottom: 0 !important; left: 0 !important; transform: none !important; border-radius: 0 !important; }
           .modal-image-panel { width: 100% !important; min-height: 220px !important; max-height: 240px !important; }
         }
@@ -677,3 +677,4 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
 }
 
 export default Products;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                          
