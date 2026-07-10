@@ -1,12 +1,12 @@
 const RAPIDAPI_KEY = 'b14d365b76msh9a342055053338dp11b45ajsnd0a0bcd5d43f';
-const RAPIDAPI_HOST = 'real-time-amazon-data.p.rapidapi.com';
+const RAPIDAPI_HOST = 'ebay-product-search.p.rapidapi.com';
 
 export default async function handler(req, res) {
   const { query = 'electronics', page = '1' } = req.query;
 
   try {
     const response = await fetch(
-      `https://${RAPIDAPI_HOST}/search?query=${encodeURIComponent(query)}&page=${page}&country=US&category_id=aps`,
+      `https://${RAPIDAPI_HOST}/api/ebay/search?keyword=${encodeURIComponent(query)}&page=${page}`,
       {
         headers: {
           'x-rapidapi-key': RAPIDAPI_KEY,

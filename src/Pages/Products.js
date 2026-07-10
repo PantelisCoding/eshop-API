@@ -118,7 +118,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     });
     const promise = slug
       ? fetch(`https://dummyjson.com/products/category/${slug}?limit=100`).then(r => r.json()).then(d => d.products || [])
-      : Promise.all(TECH_SLUGS.map(s => fetch(`https://dummyjson.com/products/category/${s}?limit=100`).then(r => r.json()).then(d => d.products || []))).then(results => results.flat());
+      : Promise.allSettled(TECH_SLUGS.map(s => fetch(`https://dummyjson.com/products/category/${s}?limit=100`).then(r => r.json()).then(d => d.products || []))).then(results => results.filter(r => r.status === 'fulfilled').flatMap(r => r.value));
     promise
       .then(products => {
         const items = products.map(mapProduct);
