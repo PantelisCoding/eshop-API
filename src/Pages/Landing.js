@@ -30,7 +30,7 @@ function Landing() {
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#DC2626" strokeWidth="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"/><path d="M12 12v4M10 14h4" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"/></svg>,
       title: 'Fast Delivery',
-      desc: 'Get your tech delivered within 1–3 business days, tracked every step'
+      desc: 'Get your tech delivered within 1-3 business days, tracked every step'
     },
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
@@ -50,12 +50,12 @@ function Landing() {
   ];
 
   const categories = [
-    { label: 'Laptops', icon: '💻', slug: 'Laptops' },
-    { label: 'Smartphones', icon: '📱', slug: 'Smartphones' },
-    { label: 'Tablets', icon: '📟', slug: 'Tablets' },
-    { label: 'Accessories', icon: '🖱️', slug: 'Accessories' },
-    { label: 'Monitors', icon: '🖥️', slug: 'Monitors' },
-    { label: 'Gaming', icon: '🎮', slug: 'Gaming' },
+    { label: 'Laptops', icon: '💻' },
+    { label: 'Smartphones', icon: '📱' },
+    { label: 'Tablets', icon: '📟' },
+    { label: 'Accessories', icon: '🖱️' },
+    { label: 'Monitors', icon: '🖥️' },
+    { label: 'Gaming', icon: '🎮' },
   ];
 
   return (
@@ -64,6 +64,7 @@ function Landing() {
         @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         @keyframes glow { 0%,100% { opacity:0.5; transform:translateX(-50%) scale(1); } 50% { opacity:0.8; transform:translateX(-50%) scale(1.08); } }
         @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+        @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
         .hero-badge { animation: fadeUp 0.4s ease 0.05s both; }
         .hero-h1 { animation: fadeUp 0.5s ease 0.1s both; font-size: 56px !important; }
         .hero-sub { animation: fadeUp 0.5s ease 0.2s both; }
@@ -99,7 +100,7 @@ function Landing() {
         }
       `}</style>
 
-      {/* ── HERO ── */}
+      {/* HERO */}
       <div className="hero-section" style={{
         position: 'relative', overflow: 'hidden',
         background: '#070B14',
@@ -131,7 +132,7 @@ function Landing() {
 
           <p className="hero-sub" style={{
             fontSize: '18px', color: '#94A3B8',
-            lineHeight: '1.7', marginBottom: '40px',
+            lineHeight: '1.7',
             maxWidth: '520px', margin: '0 auto 40px'
           }}>
             Discover the latest laptops, phones, tablets and accessories at competitive prices. Trusted by thousands of customers.
@@ -154,7 +155,6 @@ function Landing() {
             </button>
           </div>
 
-          {/* Stats */}
           <div className="hero-stats" style={{
             display: 'flex', justifyContent: 'center',
             marginTop: '60px', paddingTop: '40px',
@@ -178,8 +178,8 @@ function Landing() {
         </div>
       </div>
 
-      {/* ── CATEGORY CHIPS ── */}
-      <div className="section-pad" style={{ paddingTop: '48px', paddingBottom: '0', maxWidth: '1080px', margin: '0 auto' }}>
+      {/* CATEGORY CHIPS */}
+      <div className="section-pad" style={{ paddingTop: '48px', paddingBottom: '0', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '14px' }}>
           Browse by category
         </div>
@@ -199,8 +199,8 @@ function Landing() {
         </div>
       </div>
 
-      {/* ── FEATURED PRODUCTS CAROUSEL ── */}
-      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '0', maxWidth: '1080px', margin: '0 auto' }}>
+      {/* FEATURED PRODUCTS CAROUSEL */}
+      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '0', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
@@ -232,23 +232,17 @@ function Landing() {
           </div>
         </div>
 
-        {/* Scroll container */}
         <div ref={scrollRef} style={{
           display: 'flex', gap: '16px', overflowX: 'auto',
-          scrollbarWidth: 'none', msOverflowStyle: 'none',
-          paddingBottom: '8px'
+          scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: '8px'
         }}>
-          <style>{`.feat-scroll::-webkit-scrollbar { display: none; }`}</style>
-
           {loadingFeatured
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="feat-card" style={{
                   minWidth: '220px', maxWidth: '220px', background: '#FFFFFF',
                   border: '1px solid #E2E8F0', flexShrink: 0
                 }}>
-                  <div style={{ height: '180px', background: '#F1F5F9', animation: 'shimmer 1.4s infinite',
-                    backgroundImage: 'linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)',
-                    backgroundSize: '400px 100%' }} />
+                  <div style={{ height: '180px', backgroundImage: 'linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)', backgroundSize: '400px 100%', animation: 'shimmer 1.4s infinite' }} />
                   <div style={{ padding: '14px' }}>
                     <div style={{ height: '12px', background: '#F1F5F9', marginBottom: '8px', width: '80%' }} />
                     <div style={{ height: '12px', background: '#F1F5F9', width: '50%' }} />
@@ -274,7 +268,8 @@ function Landing() {
                     <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: '500', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       {p.category}
                     </div>
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0F172A', lineHeight: '1.4', marginBottom: '10px', flex: 1,
+                    <div style={{
+                      fontSize: '14px', fontWeight: '600', color: '#0F172A', lineHeight: '1.4', marginBottom: '10px', flex: 1,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
                     }}>
                       {p.title}
@@ -296,8 +291,8 @@ function Landing() {
         </div>
       </div>
 
-      {/* ── FEATURE CARDS ── */}
-      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '64px', maxWidth: '1080px', margin: '0 auto' }}>
+      {/* FEATURE CARDS */}
+      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '64px', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '20px' }}>
           Why choose us
         </div>
@@ -307,10 +302,7 @@ function Landing() {
               background: '#FFFFFF', border: '1px solid #E2E8F0',
               padding: '22px 20px', transition: 'box-shadow 0.2s, transform 0.2s'
             }}>
-              <div style={{
-                width: '44px', height: '44px', background: '#FEF2F2',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px'
-              }}>
+              <div style={{ width: '44px', height: '44px', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
                 {f.icon}
               </div>
               <div style={{ fontSize: '14px', fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>{f.title}</div>
@@ -320,9 +312,9 @@ function Landing() {
         </div>
       </div>
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
       <footer style={{ background: '#0F172A', color: '#CBD5E1' }}>
-        <div className="section-pad" style={{ maxWidth: '1080px', margin: '0 auto', paddingTop: '56px', paddingBottom: '40px' }}>
+        <div className="section-pad" style={{ maxWidth: '1400px', margin: '0 auto', paddingTop: '56px', paddingBottom: '40px' }}>
           <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px', marginBottom: '48px' }}>
 
             {/* Brand */}
@@ -338,7 +330,6 @@ function Landing() {
               <p style={{ fontSize: '14px', lineHeight: '1.7', color: '#94A3B8', marginBottom: '20px', maxWidth: '260px' }}>
                 Your one-stop shop for premium tech. Quality products, fast delivery, and expert support — always.
               </p>
-              {/* Social */}
               <div style={{ display: 'flex', gap: '8px' }}>
                 {[
                   { label: 'Facebook', path: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z' },
@@ -373,8 +364,7 @@ function Landing() {
               ].map(l => (
                 <div key={l.label} style={{ marginBottom: '10px' }}>
                   <span onClick={() => navigate(l.to)} className="footer-link" style={{
-                    fontSize: '14px', color: '#94A3B8', cursor: 'pointer',
-                    transition: 'color 0.15s', textDecoration: 'none'
+                    fontSize: '14px', color: '#94A3B8', cursor: 'pointer', transition: 'color 0.15s'
                   }}>
                     {l.label}
                   </span>
@@ -403,23 +393,41 @@ function Landing() {
               <div style={{ fontSize: '12px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>
                 Contact us
               </div>
-              {[
-                {
-                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>,
-                  text: '47 Ermou Street, Athens\n10563, Greece',
-                  href: 'https://www.google.com/maps/search/47+Ermou+Street,+Athens,+Greece',
-                  isMap: true
-                },
-                {
-                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>,
-                  text: '+30 210 555 0147',
-                  href: 'tel:+302105550147'
-                },
-                {
-                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
-                  text: 'hello@techstore.gr',
-                  href: 'mailto:hello@techstore.gr'
-                },
-              ].map((item, i) => (
-                <a key={i} href={item.href} target={item.isMap ? '_blank' : undefined} rel={item.isMap ? 'noopener noreferrer' : undefined} style={{
-                  display: 'flex', gap: '10px', marginBottom
+              <a href="https://www.google.com/maps/search/47+Ermou+Street,+Athens,+Greece" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', gap: '10px', marginBottom: '14px', textDecoration: 'none', color: '#94A3B8' }}>
+                <span style={{ marginTop: '2px', flexShrink: 0, color: '#DC2626' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </span>
+                <span style={{ fontSize: '14px', lineHeight: '1.5' }}>47 Ermou Street, Athens{'\n'}10563, Greece</span>
+              </a>
+              <a href="tel:+302105550147" style={{ display: 'flex', gap: '10px', marginBottom: '14px', textDecoration: 'none', color: '#94A3B8' }}>
+                <span style={{ marginTop: '2px', flexShrink: 0, color: '#DC2626' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                </span>
+                <span style={{ fontSize: '14px', lineHeight: '1.5' }}>+30 210 555 0147</span>
+              </a>
+              <a href="mailto:hello@techstore.gr" style={{ display: 'flex', gap: '10px', marginBottom: '14px', textDecoration: 'none', color: '#94A3B8' }}>
+                <span style={{ marginTop: '2px', flexShrink: 0, color: '#DC2626' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
+                <span style={{ fontSize: '14px', lineHeight: '1.5' }}>hello@techstore.gr</span>
+              </a>
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid #1E293B', paddingTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ fontSize: '13px', color: '#475569' }}>
+              {'©'} {new Date().getFullYear()} TechStore. All rights reserved.
+            </div>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(t => (
+                <span key={t} style={{ fontSize: '13px', color: '#475569', cursor: 'pointer' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default Landing;
