@@ -1,8 +1,8 @@
 This project is a full-stack e-commerce web application in it's early development.
 
 Link to site:
-https://eshop-frontend-weld.vercel.app/
-
+[https://eshop-frontend-weld.vercel.app/
+](https://eshop-frontend-fg0jb5kwx-pantelisdevs-projects.vercel.app/)
 Backend:
 
 Java Spring Boot
