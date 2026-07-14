@@ -108,7 +108,7 @@ function Landing() {
         backgroundSize: '48px 48px',
         borderBottom: '1px solid rgba(220,38,38,0.15)',
       }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '760px', maxWidth: '1400px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
 
           <div className="hero-badge" style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px',
@@ -179,7 +179,7 @@ function Landing() {
       </div>
 
       {/* CATEGORY CHIPS */}
-      <div className="section-pad" style={{ paddingTop: '48px', paddingBottom: '0', margin: '0 auto' }}>
+      <div className="section-pad" style={{ paddingTop: '48px', paddingBottom: '0', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '14px' }}>
           Browse by category
         </div>
@@ -200,7 +200,7 @@ function Landing() {
       </div>
 
       {/* FEATURED PRODUCTS CAROUSEL */}
-      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '0', margin: '0 auto' }}>
+      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '0', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
@@ -292,7 +292,7 @@ function Landing() {
       </div>
 
       {/* FEATURE CARDS */}
-      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '64px', margin: '0 auto' }}>
+      <div className="section-pad" style={{ paddingTop: '52px', paddingBottom: '64px', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '20px' }}>
           Why choose us
         </div>
@@ -314,7 +314,7 @@ function Landing() {
 
       {/* FOOTER */}
       <footer style={{ background: '#0F172A', color: '#CBD5E1' }}>
-        <div className="section-pad" style={{ margin: '0 auto', paddingTop: '56px', paddingBottom: '40px' }}>
+        <div className="section-pad" style={{ maxWidth: '1400px', margin: '0 auto', paddingTop: '56px', paddingBottom: '40px' }}>
           <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px', marginBottom: '48px' }}>
 
             {/* Brand */}
