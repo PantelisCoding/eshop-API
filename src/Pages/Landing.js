@@ -62,13 +62,17 @@ function Landing() {
     <div style={{ background: '#F8FAFC', minHeight: 'calc(100vh - 88px)' }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes glow { 0%,100% { opacity:0.5; transform:translateX(-50%) scale(1); } 50% { opacity:0.8; transform:translateX(-50%) scale(1.08); } }
+        @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
         .hero-badge { animation: fadeUp 0.4s ease 0.05s both; }
         .hero-h1 { animation: fadeUp 0.5s ease 0.1s both; font-size: 56px !important; }
         .hero-sub { animation: fadeUp 0.5s ease 0.2s both; }
         .hero-ctas { animation: fadeUp 0.5s ease 0.3s both; }
         .hero-stats { animation: fadeUp 0.5s ease 0.4s both; }
-        .shop-btn:hover { background: #B91C1C !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(220,38,38,0.4) !important; }
-        .browse-btn:hover { background: #F1F5F9 !important; }
+        .shop-btn:hover { background: #B91C1C !important; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(220,38,38,0.55) !important; }
+        .browse-btn:hover { background: rgba(255,255,255,0.12) !important; }
+        .hero-section::before { content:''; position:absolute; top:-10%; left:50%; transform:translateX(-50%); width:700px; height:700px; background:radial-gradient(circle, rgba(220,38,38,0.18) 0%, transparent 65%); pointer-events:none; animation: glow 6s ease-in-out infinite; }
+        .hero-section::after { content:''; position:absolute; bottom:-5%; right:5%; width:300px; height:300px; background:radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%); pointer-events:none; }
         .feature-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; transform: translateY(-2px); }
         .cat-chip:hover { background: #DC2626 !important; color: #FFFFFF !important; border-color: #DC2626 !important; }
         .feat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important; transform: translateY(-2px); }
@@ -97,32 +101,36 @@ function Landing() {
 
       {/* ── HERO ── */}
       <div className="hero-section" style={{
-        background: 'linear-gradient(135deg, #FEF2F2 0%, #F8FAFC 55%, #EFF6FF 100%)',
-        borderBottom: '1px solid #F1F5F9',
+        position: 'relative', overflow: 'hidden',
+        background: '#070B14',
+        backgroundImage: 'linear-gradient(rgba(220,38,38,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.07) 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+        borderBottom: '1px solid rgba(220,38,38,0.15)',
       }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
 
           <div className="hero-badge" style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px',
-            background: '#FEE2E2', color: '#B91C1C',
+            background: 'rgba(220,38,38,0.15)', color: '#FCA5A5',
+            border: '1px solid rgba(220,38,38,0.3)',
             fontSize: '13px', fontWeight: '600',
             padding: '5px 14px', borderRadius: '2px', marginBottom: '28px'
           }}>
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#DC2626', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#DC2626', display: 'inline-block', animation: 'pulseDot 2s infinite' }} />
             New arrivals every week
           </div>
 
           <h1 className="hero-h1" style={{
             fontSize: '56px', fontWeight: '800',
-            color: '#0F172A', lineHeight: '1.1',
+            color: '#FFFFFF', lineHeight: '1.1',
             marginBottom: '22px', letterSpacing: '-2px'
           }}>
             Premium tech,<br />
-            <span style={{ color: '#DC2626' }}>delivered fast.</span>
+            <span style={{ color: '#DC2626', textShadow: '0 0 40px rgba(220,38,38,0.4)' }}>delivered fast.</span>
           </h1>
 
           <p className="hero-sub" style={{
-            fontSize: '18px', color: '#64748B',
+            fontSize: '18px', color: '#94A3B8',
             lineHeight: '1.7', marginBottom: '40px',
             maxWidth: '520px', margin: '0 auto 40px'
           }}>
@@ -133,13 +141,13 @@ function Landing() {
             <button className="shop-btn" onClick={() => navigate('/products')} style={{
               padding: '15px 40px', border: 'none', background: '#DC2626', color: '#FFFFFF',
               fontSize: '16px', fontWeight: '700', cursor: 'pointer',
-              transition: 'all 0.15s', boxShadow: '0 4px 14px rgba(220,38,38,0.35)'
+              transition: 'all 0.15s', boxShadow: '0 4px 20px rgba(220,38,38,0.4)'
             }}>
               Shop now
             </button>
             <button className="browse-btn" onClick={() => navigate('/products')} style={{
-              padding: '15px 40px', border: '1.5px solid #CBD5E1', background: '#FFFFFF',
-              color: '#374151', fontSize: '16px', fontWeight: '600',
+              padding: '15px 40px', border: '1.5px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)',
+              color: '#FFFFFF', fontSize: '16px', fontWeight: '600',
               cursor: 'pointer', transition: 'background 0.15s'
             }}>
               Browse all
@@ -150,7 +158,7 @@ function Landing() {
           <div className="hero-stats" style={{
             display: 'flex', justifyContent: 'center',
             marginTop: '60px', paddingTop: '40px',
-            borderTop: '1px solid #E2E8F0'
+            borderTop: '1px solid rgba(255,255,255,0.08)'
           }}>
             {[
               { value: '500+', label: 'Products' },
@@ -160,10 +168,10 @@ function Landing() {
             ].map((stat, i, arr) => (
               <div key={stat.label} className="hero-stat" style={{
                 flex: 1, textAlign: 'center',
-                borderRight: i < arr.length - 1 ? '1px solid #E2E8F0' : 'none'
+                borderRight: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none'
               }}>
-                <div className="hero-stat-val" style={{ fontSize: '30px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>{stat.value}</div>
-                <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
+                <div className="hero-stat-val" style={{ fontSize: '30px', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.5px' }}>{stat.value}</div>
+                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -414,32 +422,4 @@ function Landing() {
                 },
               ].map((item, i) => (
                 <a key={i} href={item.href} target={item.isMap ? '_blank' : undefined} rel={item.isMap ? 'noopener noreferrer' : undefined} style={{
-                  display: 'flex', gap: '10px', marginBottom: '14px',
-                  textDecoration: 'none', color: '#94A3B8'
-                }}>
-                  <span style={{ marginTop: '2px', flexShrink: 0, color: '#DC2626' }}>{item.icon}</span>
-                  <span style={{ fontSize: '14px', lineHeight: '1.5', whiteSpace: 'pre-line' }}>{item.text}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div style={{ borderTop: '1px solid #1E293B', paddingTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-            <div style={{ fontSize: '13px', color: '#475569' }}>
-              © {new Date().getFullYear()} TechStore. All rights reserved.
-            </div>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(t => (
-                <span key={t} style={{ fontSize: '13px', color: '#475569', cursor: 'pointer' }}>{t}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
-
-    </div>
-  );
-}
-
-export default Landing;
+                  display: 'flex', gap: '10px', marginBottom

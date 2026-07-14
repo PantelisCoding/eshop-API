@@ -72,6 +72,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedBrand, setSelectedBrand] = useState('All');
   const [sortBy, setSortBy] = useState('default');
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [sliderMax, setSliderMax] = useState(0);
@@ -107,6 +108,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
 
   useEffect(() => {
     setLoading(true);
+    setSelectedBrand('All');
     const slug = CATEGORY_MAP[selectedCategory];
     const url = slug ? `/api/products?category=${slug}` : '/api/products';
     fetch(url)
@@ -118,6 +120,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
           price: p.price,
           imageUrl: p.image,
           categoryName: p.category,
+          brand: p.brand || null,
           description: p.description,
         }));
         setProducts(items);
@@ -145,7 +148,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
     return () => window.removeEventListener('resize', updateColumns);
   }, [updateColumns]);
 
-  useEffect(() => { setPage(1); }, [searchQuery, selectedCategory, sortBy, priceRange]);
+  useEffect(() => { setPage(1); }, [searchQuery, selectedCategory, selectedBrand, sortBy, priceRange]);
 
   const handleProductCheck = (product) => {
     if (selectedProducts.find(p => p.id === product.id)) {
@@ -159,6 +162,7 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
 
   const isSelected = (id) => selectedProducts.some(p => p.id === id);
   const categories = Object.keys(CATEGORY_MAP);
+  const availableBrands = ['All', ...Array.from(new Set(products.map(p => p.brand).filter(Boolean))).sort()];
 
   const filteredProducts = products
     .filter(p => {
@@ -167,7 +171,8 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
         p.categoryName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchMin = !sliderMax || p.price >= priceRange.min;
       const matchMax = !sliderMax || p.price <= priceRange.max;
-      return matchSearch && matchMin && matchMax;
+      const matchBrand = selectedBrand === 'All' || p.brand === selectedBrand;
+      return matchSearch && matchMin && matchMax && matchBrand;
     })
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
@@ -180,11 +185,12 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const visibleProducts = filteredProducts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-  const hasActiveFilters = selectedCategory !== 'All' || sortBy !== 'default' ||
+  const hasActiveFilters = selectedCategory !== 'All' || selectedBrand !== 'All' || sortBy !== 'default' ||
     priceRange.min > 0 || (sliderMax && priceRange.max < sliderMax);
 
   const clearAllFilters = () => {
     setSelectedCategory('All');
+    setSelectedBrand('All');
     setSortBy('default');
     setPriceRange({ min: 0, max: sliderMax });
   };
@@ -286,6 +292,52 @@ function Products({ loggedInUser, selectedProducts, setSelectedProducts, favorit
             </div>
           )}
         </div>
+
+        {/* Brand button */}
+        {availableBrands.length > 1 && (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setOpenFilter(openFilter === 'brand' ? null : 'brand')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '8px 14px', border: selectedBrand !== 'All' ? '1.5px solid #DC2626' : '1.5px solid #CBD5E1',
+                background: selectedBrand !== 'All' ? '#FEF2F2' : '#FFFFFF',
+                color: selectedBrand !== 'All' ? '#DC2626' : '#374151',
+                fontSize: '13px', fontWeight: '500', cursor: 'pointer', borderRadius: '0',
+                transition: 'all 0.15s'
+              }}
+            >
+              Brand
+              {selectedBrand !== 'All' && <span style={{ fontWeight: '700' }}>: {selectedBrand}</span>}
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '2px', transition: 'transform 0.15s', transform: openFilter === 'brand' ? 'rotate(180deg)' : 'none' }}>
+                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {openFilter === 'brand' && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 200,
+                background: '#FFFFFF', border: '1.5px solid #CBD5E1',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '160px',
+                maxHeight: '240px', overflowY: 'auto'
+              }}>
+                {availableBrands.map(brand => (
+                  <button
+                    key={brand}
+                    onClick={() => { setSelectedBrand(brand); setOpenFilter(null); }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '9px 16px', border: 'none', borderRadius: '0',
+                      background: selectedBrand === brand ? '#FEF2F2' : 'transparent',
+                      color: selectedBrand === brand ? '#DC2626' : '#374151',
+                      fontSize: '13px', fontWeight: selectedBrand === brand ? '600' : '400',
+                      cursor: 'pointer'
+                    }}
+                  >{brand}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Price button */}
         {sliderMax > 0 && (
