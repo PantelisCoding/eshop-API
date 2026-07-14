@@ -383,7 +383,7 @@ function App() {
 
         <style>{`@keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
 
-        <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
+        <div>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/products" element={
