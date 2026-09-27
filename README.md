@@ -1,8 +1,10 @@
 # TechStore — React E-Commerce Template
 
+
 A clean, modern e-commerce frontend built with React 19, ready to deploy on Vercel.
 
-**Live Demo:** https://eshop-frontend-weld.vercel.app/
+**Live Demo:** https://eshop-frontend-fg0jb5kwx-pantelisdevs-projects.vercel.app/
+
 
 ---
 
