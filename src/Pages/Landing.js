@@ -102,12 +102,10 @@ function Landing() {
 
       {/* HERO */}
       <div className="hero-section" style={{
-        position: 'relative', overflow: 'hidden',
-        background: '#070B14 url("/herobackground.png") center/cover no-repeat',
-        backgroundImage: 'linear-gradient(rgba(220,38,38,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.07) 1px, transparent 1px)',
-        backgroundSize: '48px 48px',
-        borderBottom: '1px solid rgba(220,38,38,0.15)',
-      }}>
+          position: 'relative', overflow: 'hidden',
+          background: '#070B14 url("/herobackground.png") center/cover no-repeat',
+          borderBottom: '1px solid rgba(220,38,38,0.15)',
+        }}>
         <div style={{ maxWidth: '760px', maxWidth: '1400px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
 
           <div className="hero-badge" style={{
