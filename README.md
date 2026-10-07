@@ -3,7 +3,7 @@
 
 A clean, modern e-commerce frontend built with React 19, ready to deploy on Vercel.
 
-**Live Demo:** https://eshop-frontend-fg0jb5kwx-pantelisdevs-projects.vercel.app/
+**Live Demo:** https://eshop-frontend-fg0jb5kwx-pantelisdevs-projects.vercel.app/](https://eshop-frontend-aq3kz81mz-pantelisdevs-projects.vercel.app/)
 
 
 ---
